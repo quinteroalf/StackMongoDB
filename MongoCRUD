@@ -1,0 +1,64 @@
+import pymongo
+from datetime import datetime
+# Replace placeholders with your actual connection details
+client = pymongo.MongoClient( "mongodb+srv://quinteroalf:Teclado02_@cldw.igp2bgz.mongodb.net/",tlsAllowInvalidCertificates=True)
+
+# Access the database and collections
+db = client["blog"]
+blog_collection = db["blog"]
+post_collection = db["post"]
+
+# --- Examples of CRUD operations ---
+# Format the datetime object
+
+current_date = datetime.now()
+formatted_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
+# Read all posts from the "post" collection
+all_posts = post_collection.find()
+for post in all_posts:
+    print(post)
+
+# Insert a new post
+new_post = {"title": "My New Post", "content": "This is the content of my new post."}
+post_collection.insert_one(new_post)
+post_collection.insert_many([  
+ {
+   "title": "Post Title 26",
+   "body": "Body of post.",
+   "category": "Event",
+   "likes": 2,
+   "tags": ["news", "events"],
+   "date": {
+        "original": current_date,
+        "formatted": formatted_date
+    }
+ },
+ {
+   "title": "Post Title 27",
+   "body": "Body of post.",
+   "category": "Technology",
+   "likes": 3,
+   "tags": ["news", "events"],
+   "date": current_date
+ },
+ {
+   "title": "Post Title 28",
+   "body": "Body of post.",
+   "category": "Event",
+   "likes": 4,
+   "tags": ["news", "events"],
+   "date": current_date
+ }
+])
+
+# Update an existing post
+#post_collection.update_one({"title": "My New Post"}, {"$set": {"content": "Updated content!!!"}})
+
+# Delete a post
+#post_collection.delete_one({"title": "post 1"})
+
+#post_collection.update_one(
+#    {"title": "Post Title 11"},
+#    {"$set": {"date": {"$currentDate": {"lastModified": True}}}}
+#)
+ 

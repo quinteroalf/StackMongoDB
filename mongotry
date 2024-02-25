@@ -1,0 +1,19 @@
+import pymongo
+
+try:
+    client = pymongo.MongoClient('mongodb+srv://quinteroalf:Teclado02_@cldw.igp2bgz.mongodb.net/',tlsAllowInvalidCertificates=True)
+
+
+    # Retrieve all documents without filtering
+    result = client['blog']['post'].find()  # No filter argument needed
+
+    # Iterate over and process the results
+    for post in result:
+        print(post)  # Replace with your desired processing
+
+except pymongo.errors.PyMongoError as error:
+    print("An error occurred:", error)
+
+finally:
+    if client:
+        client.close()  # Close the connection
