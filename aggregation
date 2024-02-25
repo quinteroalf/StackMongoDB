@@ -1,0 +1,139 @@
+import pymongo
+from datetime import datetime
+import json
+# Replace placeholders with your actual connection details
+client = pymongo.MongoClient( "mongodb+srv://quinteroalf:Teclado02_@cldw.igp2bgz.mongodb.net/",tlsAllowInvalidCertificates=True)
+
+# Access the database and collections
+db = client["sample_airbnb"]
+post_collection = db["ListingsAndReviews"]
+
+# --- Examples of CRUD operations ---
+# Format the datetime object
+
+current_date = datetime.now()
+formatted_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
+
+db = client["sample_airbnb"]
+post_collection = db["listingsAndReviews"]
+
+pipeline = [
+    {"$match": {"property_type": "House"}},
+    {"$limit": 2},
+    {"$project": {
+        "name": 1,
+        "bedrooms": 1,
+        "price": 1
+    }}
+]
+
+result = list(post_collection.aggregate(pipeline))
+
+# Print or use the result as needed
+#print(result)
+
+result = list(post_collection.aggregate( [ { "$group" : { "_id" : "$property_type" } } ]))
+# Print or use the result as needed
+#print(result)
+result=None
+db = client["sample_mflix"]
+post_collection = db["movies"]
+result = list(post_collection.aggregate([ { "$limit": 1 } ]))
+#print(result)
+
+
+
+db = client["sample_restaurants"]
+post_collection = db["restaurants"]
+pipeline = [
+  {
+    "$addFields": {
+      "avgGrade": { "$avg": "$grades.score" }
+    }
+  },
+  {
+    "$project": {
+      "name": 1,
+      "avgGrade": 1
+    }
+  },
+  {
+    "$limit": 5
+  }
+]
+
+
+result = list(post_collection.aggregate(pipeline))
+#print(result)
+
+pipeline = [
+  {
+    "$match": { "cuisine": "Chinese" }
+  },
+  {
+    "$count": "totalChinese"
+  }
+]
+
+result = list(post_collection.aggregate(pipeline))
+#print(result)
+
+db = client["sample_mflix"]
+post_collection = db["comments"]
+pipeline=[
+  {
+    "$lookup": {
+      "from": "movies",
+      "localField": "movie_id",
+      "foreignField": "_id",
+      "as": "movie_details",
+    },
+  },
+  {
+    "$limit": 1
+  }
+]
+
+result = list(post_collection.aggregate(pipeline))
+#print(result)
+
+
+db = client["sample_airbnb"]
+post_collection = db["listingsAndReviews"]
+
+pipeline =[
+  {
+    "$group": {
+      "_id": "$property_type",
+      "properties": {
+        "$push": {
+          "name": "$name",
+          "accommodates": "$accommodates",
+          "price": "$price",
+        },
+      },
+    },
+  },
+  { "$out": "properties_by_type" },
+]
+
+result = list(post_collection.aggregate(pipeline))
+#print(result)
+
+
+db = client["blog"]
+post_collection = db["post"]
+
+pipeline = [
+  # Stage 1: Only find documents that have more than 1 like
+  {
+    "$match": { "likes": { "$gt": 1 } }
+  },
+  # Stage 2: Group documents by category and sum each categories likes
+  {
+    "$group": { "_id": "$category", "totalLikes": { "$sum": "$likes" } }
+  }
+]
+
+result = list(post_collection.aggregate(pipeline))
+print(result)
